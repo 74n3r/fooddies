@@ -1,0 +1,58 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.gripxtech.kasimrangwala.grophers.MainActivity">
+
+    <group android:id="@+id/action_group1">
+        <item
+            android:id="@+id/action_home"
+            android:icon="@drawable/ic_smartphone_black_24dp"
+            android:title="@string/action_home" />
+        <item
+            android:id="@+id/action_edit_location"
+            android:icon="@drawable/ic_edit_location_black_24dp"
+            android:title="@string/action_edit_location" />
+    </group>
+
+    <group android:id="@+id/action_group2">
+        <item android:title="@string/action_information">
+            <menu>
+                <item
+                    android:id="@+id/action_addresses"
+                    android:icon="@drawable/ic_location_on_black_24dp"
+                    android:title="@string/action_addresses" />
+                <item
+                    android:id="@+id/action_orders"
+                    android:icon="@drawable/ic_restore_black_24dp"
+                    android:title="@string/action_orders" />
+                <item
+                    android:id="@+id/action_cart"
+                    android:icon="@drawable/ic_local_grocery_store_black_24dp"
+                    android:title="@string/action_cart" />
+            </menu>
+        </item>
+    </group>
+
+    <group android:id="@+id/action_group3">
+        <item android:title="@string/action_information">
+            <menu>
+                <item
+                    android:id="@+id/action_help_support"
+                    android:icon="@drawable/ic_help_outline_black_24dp"
+                    android:title="@string/action_help_support" />
+                <item
+                    android:id="@+id/action_rate"
+                    android:icon="@drawable/ic_star_border_black_24dp"
+                    android:title="@string/action_rate" />
+                <item
+                    android:id="@+id/action_share"
+                    android:icon="@drawable/ic_share_black_24dp"
+                    android:title="@string/action_share" />
+                <item
+                    android:id="@+id/action_logout"
+                    android:icon="@drawable/ic_person_black_24dp"
+                    android:title="@string/action_logout" />
+            </menu>
+        </item>
+    </group>
+
+</menu>

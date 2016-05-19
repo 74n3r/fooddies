@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/glRootTopMenu"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
+    app:columnCount="4"
+    app:rowCount="2">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu1"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu1"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu2"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu2"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu3"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu3"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenuToggle"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenuToggle"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu4"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu4"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu5"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu5"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu6"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu6"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</android.support.v7.widget.GridLayout>

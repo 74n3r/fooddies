@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">E Shop</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Nav Drawer related strings BEGIN -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_home">9033780529</string>
+    <string name="action_edit_location">Himaliya Mall, Bhavnagar</string>
+    <string name="action_information">My Information</string>
+    <string name="action_addresses">My Addresses</string>
+    <string name="action_orders">My Orders</string>
+    <string name="action_cart">My Cart</string>
+    <string name="action_other">Others</string>
+    <string name="action_help_support">Help &amp; Support</string>
+    <string name="action_share">Share</string>
+    <string name="action_rate">Rate</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_view_cart">View Cart</string>
+    <string name="action_search">Search</string>
+    <!-- Nav Drawer related strings END -->
+
+    <!-- Dummy strings BEGIN -->
+    <string name="cat_1">Household Needs</string>
+    <string name="cat_2">Fitness Devices</string>
+    <string name="cat_3">Vegetables</string>
+    <string name="delivery_by">Delivery by</string>
+    <string name="delivery_in">Delivery in</string>
+    <string name="delivery_time">Today</string>
+    <string name="dummy_location">Hill Drive, Bhavnagar</string>
+    <!-- Dummy strings END -->
+
+    <!-- Search fragment's strings BEGIN -->
+    <string name="search_hint">Search your Item</string>
+    <string name="search_clear">Clear</string>
+    <!-- Search fragment's strings END -->
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

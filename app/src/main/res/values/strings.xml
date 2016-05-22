@@ -20,6 +20,29 @@
     <string name="action_search">Search</string>
     <!-- Nav Drawer related strings END -->
 
+    <!-- Activities & Fragments related strings BEGIN -->
+    <string name="title_login_activity">Welcome</string>
+    <string name="title_login_fragment">Login</string>
+    <string name="title_register_fragment">Register</string>
+    <!-- Activities & Fragments related strings END -->
+
+    <!-- Login Activity related strings BEGIN -->
+    <string name="login_mobile_no">Mobile Number</string>
+    <string name="login_password">Password</string>
+    <string name="register_first_name">First Name</string>
+    <string name="register_last_name">Last Name</string>
+    <string name="register_email">Email Address</string>
+    <string name="register_confirm_password">Confirm Password</string>
+    <string name="register_country">Country</string>
+    <string name="register_state">State</string>
+    <string name="register_city">City</string>
+    <!-- Login Activity related strings END -->
+
+    <!-- Internet Connection related string BEGIN -->
+    <string name="device_offline">Turn on Internet Connection</string>
+    <string name="cant_connect_to_server">Couldn\'t reach to server</string>
+    <!-- Internet Connection related string END -->
+
     <!-- Dummy strings BEGIN -->
     <string name="cat_1">Household Needs</string>
     <string name="cat_2">Fitness Devices</string>
@@ -34,6 +57,17 @@
     <string name="search_hint">Search your Item</string>
     <string name="search_clear">Clear</string>
     <!-- Search fragment's strings END -->
+
+    <!-- Intro Activity's strings BEGIN -->
+    <string name="slide_1_african_story_books">New African Story Books</string>
+    <string name="slide_2_volunteer_professionals">Created by Volunteer Professionals</string>
+    <string name="slide_3_download_and_go">Download and Read on the go</string>
+    <string name="slide_4_different_languages">Available in different languages</string>
+    <string name="slide_1_african_story_books_subtitle">That anyone can freely translate and distribute.</string>
+    <string name="slide_2_volunteer_professionals_subtitle">On a single day, designers, writers and illustrators meet to create cool books.</string>
+    <string name="slide_3_download_and_go_subtitle">On the bus, in a train, wherever you are - the books are there too.</string>
+    <string name="slide_4_different_languages_subtitle">English, Zulu, Afrikaans, Xhosa and more!</string>
+    <!-- Intro Activity's strings END -->
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

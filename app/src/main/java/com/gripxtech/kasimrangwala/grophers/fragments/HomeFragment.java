@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,7 @@ import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +27,13 @@ import android.widget.TextView;
 
 import com.gripxtech.kasimrangwala.grophers.MainActivity;
 import com.gripxtech.kasimrangwala.grophers.R;
-import com.malinskiy.superrecyclerview.OnMoreListener;
+import com.gripxtech.kasimrangwala.grophers.utils.Utils;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,13 +55,14 @@ public class HomeFragment extends Fragment {
 
     @BindView(R.id.rvHome)
     SuperRecyclerView mCategoryList;
-
+    List<String> mSliderImageRes;
+    private List<Object> objects;
+    // private OnMoreListener moreListener;
     private HomeAdapter mAdapter;
-    private OnMoreListener moreListener;
-
     private ActionBarDrawerToggle mDrawerToggle;
     private MainActivity mActivity;
     private Handler mHandler;
+    private Utils mUtils;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -69,6 +77,12 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mActivity = (MainActivity) getActivity();
         mHandler = new Handler();
+        mUtils = Utils.getInstance();
+
+        mSliderImageRes = new ArrayList<>();
+
+        objects = new ArrayList<>();
+        mAdapter = new HomeAdapter(objects);
     }
 
     @Override
@@ -110,19 +124,7 @@ public class HomeFragment extends Fragment {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mCategoryList.setLayoutManager(linearLayoutManager);
-        baseGetCategory(false);
-        // mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-        //     @Override
-        //     public void onRefresh() {
-        //         baseGetCategory(false);
-        //     }
-        // });
-        moreListener = new OnMoreListener() {
-            @Override
-            public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
-                baseGetCategory(true);
-            }
-        };
+        new GetPickLocation().execute();
     }
 
     public void baseGetCategory(final boolean isMoreAsk) {
@@ -193,9 +195,9 @@ public class HomeFragment extends Fragment {
                     viewHolder.getTopMenuImages().get(i).setImageResource(item.getResDrawable(i));
                     viewHolder.getTopMenuTexts().get(i).setText(item.getDescription(i));
                 }
-            } else if (holder.getItemViewType() == ItemViewTypes.Slider) {
-                SliderItems items = (SliderItems) objects.get(position);
-                SliderViewHolder viewHolder = (SliderViewHolder) holder;
+                // } else if (holder.getItemViewType() == ItemViewTypes.Slider) {
+                // SliderItems items = (SliderItems) objects.get(position);
+                // SliderViewHolder viewHolder = (SliderViewHolder) holder;
             } else if (holder.getItemViewType() == ItemViewTypes.Category) {
                 CategoryItem item = (CategoryItem) objects.get(position);
                 CategoryViewHolder viewHolder = (CategoryViewHolder) holder;
@@ -333,13 +335,7 @@ public class HomeFragment extends Fragment {
         public SliderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
-            List<Integer> imageRes = new ArrayList<>();
-            imageRes.add(R.drawable.ic_header_3);
-            imageRes.add(R.drawable.ic_header_2);
-            imageRes.add(R.drawable.ic_header_1);
-
-            mPager.setAdapter(new SliderAdapter(imageRes));
+            mPager.setAdapter(new SliderAdapter());
         }
     }
 
@@ -349,20 +345,18 @@ public class HomeFragment extends Fragment {
 
     class SliderAdapter extends PagerAdapter {
 
-        List<Integer> imageRes;
         LayoutInflater inflater;
 
         @BindView(R.id.ivSlideImage)
         ImageView slider;
 
-        public SliderAdapter(List<Integer> imageRes) {
-            this.imageRes = imageRes;
+        public SliderAdapter() {
             inflater = mActivity.getLayoutInflater();
         }
 
         @Override
         public int getCount() {
-            return imageRes.size();
+            return mSliderImageRes.size();
         }
 
         @Override
@@ -379,11 +373,10 @@ public class HomeFragment extends Fragment {
             );
 
             ButterKnife.bind(this, view);
-
-            // ImageView imageView = (ImageView) view.findViewById(R.id.ivSlideImage);
-            // imageView.setImageResource(imageRes.get(position));
-            slider.setImageResource(imageRes.get(position));
-
+            // slider.setImageResource(imageRes.get(position));
+            Picasso.with(mActivity)
+                    .load(mSliderImageRes.get(position))
+                    .into(slider);
             container.addView(view);
             return view;
         }
@@ -474,6 +467,124 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    class GetPickLocation extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            objects.add(new PickLocationItem(
+                    "Hill Drive, Bhavnagar"
+            ));
+
+            mCategoryList.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
+            new GetTopMenu().execute();
+        }
+    }
+
+    class GetTopMenu extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            objects.add(new TopMenuItems(
+                    new int[]{
+                            R.drawable.ic_grocery,
+                            R.drawable.ic_mobiles,
+                            R.drawable.ic_fruits_vegetables,
+                            R.drawable.ic_grocery,
+                            R.drawable.ic_mobiles,
+                            R.drawable.ic_fruits_vegetables
+                    },
+                    new String[]{
+                            "Household Needs",
+                            "Fitness Devices",
+                            "Vegetables",
+                            "Household Needs",
+                            "Fitness Devices",
+                            "Vegetables"
+                    }
+            ));
+
+            mAdapter.notifyDataSetChanged();
+            new GetSlider().execute();
+        }
+    }
+
+    class GetSlider extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                return mUtils.getToServer(ServerData.Slider.URL, null);
+            } catch (Exception e) {
+                Log.e(TAG, "GetSlider::doInBackground(): " + e.getMessage());
+                Snackbar.make(mRootWidget,
+                        getString(R.string.cant_connect_to_server),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null && result.length() != 0) {
+                Log.e(TAG, "GetSlider::onPostExecute(): result is: " + result);
+                try {
+                    JSONArray sliderList = new JSONObject(result)
+                            .getJSONArray(ServerData.Slider.SliderList);
+                    if (null != sliderList && sliderList.length() > 0) {
+                        mSliderImageRes.clear();
+                        for (int i = 0; i < sliderList.length(); i++) {
+                            JSONObject sliderObject = sliderList.getJSONObject(i);
+                            if (sliderObject != null) {
+                                mSliderImageRes.add(
+                                        ServerData.Slider.ImageURL +
+                                                sliderObject.getString(ServerData.Slider.SliderImage));
+                            } else {
+                                Log.e(TAG, "GetSlider::onPostExecute():" +
+                                        " sliderObject is null at index " + i);
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "GetSlider::onPostExecute():" +
+                                " sliderList is null or empty");
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "GetSlider::onPostExecute(): " + e.getMessage());
+                }
+            }
+            objects.add(new SliderItems());
+
+            mAdapter.notifyDataSetChanged();
+            baseGetCategory(false);
+            // mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            //     @Override
+            //     public void onRefresh() {
+            //         baseGetCategory(false);
+            //     }
+            // });
+            // moreListener = new OnMoreListener() {
+            //     @Override
+            //     public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
+            //         baseGetCategory(true);
+            //     }
+            // };
+        }
+    }
+
     class GetCategoryList extends AsyncTask<Void, Void, String> {
 
         private boolean isMoreAsk;
@@ -495,29 +606,6 @@ public class HomeFragment extends Fragment {
         }
 
         public void setupCategoryList(String s) {
-            List<Object> objects = new ArrayList<>();
-            objects.add(new PickLocationItem(
-                    "Hill Drive, Bhavnagar"
-            ));
-            objects.add(new TopMenuItems(
-                    new int[]{
-                            R.drawable.ic_grocery,
-                            R.drawable.ic_mobiles,
-                            R.drawable.ic_fruits_vegetables,
-                            R.drawable.ic_grocery,
-                            R.drawable.ic_mobiles,
-                            R.drawable.ic_fruits_vegetables
-                    },
-                    new String[]{
-                            "Household Needs",
-                            "Fitness Devices",
-                            "Vegetables",
-                            "Household Needs",
-                            "Fitness Devices",
-                            "Vegetables"
-                    }
-            ));
-            objects.add(new SliderItems());
             objects.add(new CategoryItem(
                     R.drawable.ic_header_1,
                     R.drawable.ic_grocery,
@@ -549,8 +637,18 @@ public class HomeFragment extends Fragment {
                     mActivity.getString(R.string.cat_3),
                     mActivity.getString(R.string.delivery_time)));
 
-            mAdapter = new HomeAdapter(objects);
-            mCategoryList.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
+            // mCategoryList.setOnMoreListener(moreListener);
+        }
+    }
+
+    class ServerData {
+        public class Slider {
+            public static final String URL = Utils.baseURL + "getslider.aspx";
+            public static final String ImageURL = "http://foooddies.com/admin/";
+            public static final String SliderList = "slider";
+            public static final String SliderID = "sid";
+            public static final String SliderImage = "image";
         }
     }
 }

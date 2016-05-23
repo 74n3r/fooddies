@@ -37,6 +37,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.BindViews;
@@ -113,6 +115,7 @@ public class HomeFragment extends Fragment {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mActivity.setTitle(getString(R.string.app_name));
 
         mDrawerToggle = new ActionBarDrawerToggle(mActivity, mActivity.getDrawerLayout(), mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -192,7 +195,9 @@ public class HomeFragment extends Fragment {
                 TopMenuItems item = (TopMenuItems) objects.get(position);
                 TopMenuViewHolder viewHolder = (TopMenuViewHolder) holder;
                 for (int i = 0; i < TopMenuItems.LIMIT; i++) {
-                    viewHolder.getTopMenuImages().get(i).setImageResource(item.getResDrawable(i));
+                    Picasso.with(mActivity)
+                            .load(item.getResDrawable(i))
+                            .into(viewHolder.getTopMenuImages().get(i));
                     viewHolder.getTopMenuTexts().get(i).setText(item.getDescription(i));
                 }
                 // } else if (holder.getItemViewType() == ItemViewTypes.Slider) {
@@ -201,8 +206,12 @@ public class HomeFragment extends Fragment {
             } else if (holder.getItemViewType() == ItemViewTypes.Category) {
                 CategoryItem item = (CategoryItem) objects.get(position);
                 CategoryViewHolder viewHolder = (CategoryViewHolder) holder;
-                viewHolder.getHeader().setImageResource(item.getHeader());
-                viewHolder.getLogo().setImageResource(item.getLogo());
+                Picasso.with(mActivity)
+                        .load(item.getHeader())
+                        .into(viewHolder.getHeader());
+                Picasso.with(mActivity)
+                        .load(item.getLogo())
+                        .into(viewHolder.getLogo());
                 viewHolder.getName().setText(item.getName());
                 viewHolder.getDeliveryTime().setText(item.getDeliveryTime());
             }
@@ -267,14 +276,17 @@ public class HomeFragment extends Fragment {
 
     class TopMenuViewHolder extends RecyclerView.ViewHolder {
 
-        @BindViews({R.id.ivTopMenu1, R.id.ivTopMenu2, R.id.ivTopMenu3, R.id.ivTopMenu4, R.id.ivTopMenu5, R.id.ivTopMenu6})
+        @BindViews({R.id.ivTopMenu1, R.id.ivTopMenu2, R.id.ivTopMenu3, R.id.ivTopMenu4, R.id.ivTopMenu5, R.id.ivTopMenu6, R.id.ivTopMenu7})
         List<ImageView> mTopMenuImages;
 
-        @BindViews({R.id.tvTopMenu1, R.id.tvTopMenu2, R.id.tvTopMenu3, R.id.tvTopMenu4, R.id.tvTopMenu5, R.id.tvTopMenu6})
+        @BindViews({R.id.tvTopMenu1, R.id.tvTopMenu2, R.id.tvTopMenu3, R.id.tvTopMenu4, R.id.tvTopMenu5, R.id.tvTopMenu6, R.id.tvTopMenu7})
         List<TextView> mTopMenuTexts;
 
-        @BindViews({R.id.cvTopMenu4, R.id.cvTopMenu5, R.id.cvTopMenu6})
+        @BindViews({R.id.cvTopMenu4, R.id.cvTopMenu5, R.id.cvTopMenu6, R.id.cvTopMenu7})
         List<CardView> mTopMenuItems;
+
+        @BindView(R.id.tvTopMenuToggle)
+        TextView mToggleText;
 
         @BindView(R.id.glRootTopMenu)
         GridLayout mRoot;
@@ -287,16 +299,59 @@ public class HomeFragment extends Fragment {
         }
 
         @OnClick(R.id.ivTopMenuToggle)
-        public void onToggle() {
+        public void onToggle(ImageView imageView) {
             for (CardView view : mTopMenuItems) {
                 view.setVisibility(isTopItemHidden ? View.VISIBLE : View.GONE);
             }
             isTopItemHidden = !isTopItemHidden;
+            if (isTopItemHidden) {
+                imageView.setImageResource(R.drawable.ic_add_circle_outline_black_48dp);
+                mToggleText.setText(getString(R.string.action_expand));
+
+            } else {
+                imageView.setImageResource(R.drawable.ic_remove_circle_outline_black_48dp);
+                mToggleText.setText(getString(R.string.action_collapse));
+            }
         }
 
-        @OnClick({R.id.cvTopMenu1, R.id.cvTopMenu2, R.id.cvTopMenu3, R.id.cvTopMenu4, R.id.cvTopMenu5, R.id.cvTopMenu6})
-        public void onTopMenu(View view) {
+        @OnClick({R.id.ivTopMenu1, R.id.ivTopMenu2, R.id.ivTopMenu3, R.id.ivTopMenu4,
+                R.id.ivTopMenu5, R.id.ivTopMenu6, R.id.ivTopMenu7})
+        public void onItemClick(ImageView imageView) {
+            int clickPosition = 0;
+            switch (imageView.getId()) {
+                case R.id.ivTopMenu1:
+                    clickPosition = 0;
+                    break;
+                case R.id.ivTopMenu2:
+                    clickPosition = 1;
+                    break;
+                case R.id.ivTopMenu3:
+                    clickPosition = 2;
+                    break;
+                case R.id.ivTopMenu4:
+                    clickPosition = 3;
+                    break;
+                case R.id.ivTopMenu5:
+                    clickPosition = 4;
+                    break;
+                case R.id.ivTopMenu6:
+                    clickPosition = 5;
+                    break;
+                case R.id.ivTopMenu7:
+                    clickPosition = 6;
+                    break;
 
+            }
+            TopMenuItems item = (TopMenuItems) mAdapter.getObjects().get(getAdapterPosition());
+            mActivity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flContentMain, CategoryFragment.newInstance(
+                            item.getResDrawable(clickPosition),
+                            item.getDescription(clickPosition),
+                            item.getId(clickPosition)
+                    ), CategoryFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
         }
 
         public List<ImageView> getTopMenuImages() {
@@ -309,16 +364,22 @@ public class HomeFragment extends Fragment {
     }
 
     class TopMenuItems {
-        public static final int LIMIT = 6;
-        private int[] resDrawable;
+        public static final int LIMIT = 7;
+        private String[] id;
+        private String[] resDrawable;
         private String[] description;
 
-        public TopMenuItems(int[] resDrawable, String[] description) {
+        public TopMenuItems(String[] id, String[] resDrawable, String[] description) {
+            this.id = id;
             this.resDrawable = resDrawable;
             this.description = description;
         }
 
-        public int getResDrawable(int location) {
+        public String getId(int location) {
+            return id[location];
+        }
+
+        public String getResDrawable(int location) {
             return resDrawable[location];
         }
 
@@ -335,7 +396,34 @@ public class HomeFragment extends Fragment {
         public SliderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mPager.setAdapter(new SliderAdapter());
+            final SliderAdapter sliderAdapter = new SliderAdapter();
+            mPager.setAdapter(sliderAdapter);
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mPager.getCurrentItem() == (sliderAdapter.getCount() - 1)) {
+                                mPager.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mPager.setCurrentItem(0, true);
+                                    }
+                                });
+                            } else {
+                                mPager.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }, 99, 1999);
         }
     }
 
@@ -414,7 +502,8 @@ public class HomeFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.flContentMain, CategoryFragment.newInstance(
                             item.getHeader(),
-                            item.getName()
+                            item.getName(),
+                            item.getId()
                     ), CategoryFragment.TAG)
                     .addToBackStack(null)
                     .commit();
@@ -438,23 +527,29 @@ public class HomeFragment extends Fragment {
     }
 
     class CategoryItem {
-        private int header;
-        private int logo;
+        private String id;
+        private String header;
+        private String logo;
         private String name;
         private String deliveryTime;
 
-        public CategoryItem(int header, int logo, String name, String deliveryTime) {
+        public CategoryItem(String id, String header, String logo, String name, String deliveryTime) {
+            this.id = id;
             this.header = header;
             this.logo = logo;
             this.name = name;
             this.deliveryTime = deliveryTime;
         }
 
-        public int getHeader() {
+        public String getId() {
+            return id;
+        }
+
+        public String getHeader() {
             return header;
         }
 
-        public int getLogo() {
+        public String getLogo() {
             return logo;
         }
 
@@ -491,31 +586,59 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
+            try {
+                return mUtils.getToServer(ServerData.Category.URL, null);
+            } catch (Exception e) {
+                Log.e(TAG, "GetTopMenu::doInBackground(): " + e.getMessage());
+                Snackbar.make(mRootWidget,
+                        getString(R.string.cant_connect_to_server),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
             return null;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            objects.add(new TopMenuItems(
-                    new int[]{
-                            R.drawable.ic_grocery,
-                            R.drawable.ic_mobiles,
-                            R.drawable.ic_fruits_vegetables,
-                            R.drawable.ic_grocery,
-                            R.drawable.ic_mobiles,
-                            R.drawable.ic_fruits_vegetables
-                    },
-                    new String[]{
-                            "Household Needs",
-                            "Fitness Devices",
-                            "Vegetables",
-                            "Household Needs",
-                            "Fitness Devices",
-                            "Vegetables"
-                    }
-            ));
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null && result.length() != 0) {
+                Log.e(TAG, "GetTopMenu::onPostExecute(): result is: " + result);
+                String[] topMenuIds = new String[TopMenuItems.LIMIT];
+                String[] topMenuImages = new String[TopMenuItems.LIMIT];
+                String[] topMenuText = new String[TopMenuItems.LIMIT];
+                try {
+                    JSONArray topMenuList = new JSONObject(result)
+                            .getJSONArray(ServerData.Category.CategoryList);
+                    if (null != topMenuList && topMenuList.length() > 0) {
+                        for (int i = 0; i < topMenuList.length(); i++) {
+                            JSONObject topMenuObject = topMenuList.getJSONObject(i);
+                            if (topMenuObject != null) {
+                                topMenuIds[i] = topMenuObject.getString(ServerData.Category.CateGoryID);
+                                topMenuImages[i] = ServerData.Category.ImageURL +
+                                        topMenuObject.getString(ServerData.Category.CateGoryImage);
+                                topMenuText[i] = topMenuObject.getString(ServerData.Category.Category);
+                            } else {
+                                Log.e(TAG, "GetTopMenu::onPostExecute():" +
+                                        " topMenuObject is null at index " + i);
+                            }
+                            if (i == TopMenuItems.LIMIT - 1) {
+                                break;
+                            }
+                        }
 
+                    } else {
+                        Log.e(TAG, "GetTopMenu::onPostExecute():" +
+                                " topMenuList is null or empty");
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "GetTopMenu::onPostExecute(): " + e.getMessage());
+                }
+                objects.add(new TopMenuItems(
+                        topMenuIds,
+                        topMenuImages,
+                        topMenuText
+                ));
+            }
             mAdapter.notifyDataSetChanged();
             new GetSlider().execute();
         }
@@ -596,49 +719,52 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
+            try {
+                return mUtils.getToServer(ServerData.Category.URL, null);
+            } catch (Exception e) {
+                Log.e(TAG, "GetCategoryList::doInBackground(): " + e.getMessage());
+                Snackbar.make(mRootWidget,
+                        getString(R.string.cant_connect_to_server),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
             return null;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            setupCategoryList(s);
-        }
-
-        public void setupCategoryList(String s) {
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_1,
-                    R.drawable.ic_grocery,
-                    mActivity.getString(R.string.cat_1),
-                    mActivity.getString(R.string.delivery_time)));
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_2,
-                    R.drawable.ic_mobiles,
-                    mActivity.getString(R.string.cat_2),
-                    mActivity.getString(R.string.delivery_time)));
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_3,
-                    R.drawable.ic_fruits_vegetables,
-                    mActivity.getString(R.string.cat_3),
-                    mActivity.getString(R.string.delivery_time)));
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_1,
-                    R.drawable.ic_grocery,
-                    mActivity.getString(R.string.cat_1),
-                    mActivity.getString(R.string.delivery_time)));
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_2,
-                    R.drawable.ic_mobiles,
-                    mActivity.getString(R.string.cat_2),
-                    mActivity.getString(R.string.delivery_time)));
-            objects.add(new CategoryItem(
-                    R.drawable.ic_header_3,
-                    R.drawable.ic_fruits_vegetables,
-                    mActivity.getString(R.string.cat_3),
-                    mActivity.getString(R.string.delivery_time)));
-
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null && result.length() != 0) {
+                Log.e(TAG, "GetCategoryList::onPostExecute(): result is: " + result);
+                try {
+                    JSONArray categoryList = new JSONObject(result)
+                            .getJSONArray(ServerData.Category.CategoryList);
+                    if (null != categoryList && categoryList.length() > 0) {
+                        for (int i = 0; i < categoryList.length(); i++) {
+                            JSONObject categoryObject = categoryList.getJSONObject(i);
+                            if (categoryObject != null) {
+                                objects.add(new CategoryItem(
+                                        categoryObject.getString(ServerData.Category.CateGoryID),
+                                        ServerData.Category.ImageURL +
+                                                categoryObject.getString(ServerData.Category.CateGoryImage),
+                                        ServerData.Category.ImageURL +
+                                                categoryObject.getString(ServerData.Category.CateGoryImage),
+                                        categoryObject.getString(ServerData.Category.Category),
+                                        mActivity.getString(R.string.delivery_time)));
+                            } else {
+                                Log.e(TAG, "GetCategoryList::onPostExecute():" +
+                                        " categoryObject is null at index " + i);
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "GetCategoryList::onPostExecute():" +
+                                " categoryList is null or empty");
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "GetCategoryList::onPostExecute(): " + e.getMessage());
+                }
+            }
             mAdapter.notifyDataSetChanged();
-            // mCategoryList.setOnMoreListener(moreListener);
         }
     }
 
@@ -649,6 +775,15 @@ public class HomeFragment extends Fragment {
             public static final String SliderList = "slider";
             public static final String SliderID = "sid";
             public static final String SliderImage = "image";
+        }
+
+        public class Category {
+            public static final String URL = Utils.baseURL + "getcategory.aspx";
+            public static final String ImageURL = "http://foooddies.com/admin/";
+            public static final String CategoryList = "category";
+            public static final String CateGoryID = "Cid";
+            public static final String Category = "Category";
+            public static final String CateGoryImage = "image";
         }
     }
 }

@@ -18,6 +18,8 @@
     <string name="action_logout">Logout</string>
     <string name="action_view_cart">View Cart</string>
     <string name="action_search">Search</string>
+    <string name="action_expand">Expand</string>
+    <string name="action_collapse">Collapse</string>
     <!-- Nav Drawer related strings END -->
 
     <!-- Activities & Fragments related strings BEGIN -->

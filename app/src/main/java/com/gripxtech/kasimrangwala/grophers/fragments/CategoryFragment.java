@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 
 import com.gripxtech.kasimrangwala.grophers.MainActivity;
 import com.gripxtech.kasimrangwala.grophers.R;
+import com.gripxtech.kasimrangwala.grophers.utils.Utils;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +35,7 @@ public class CategoryFragment extends Fragment {
     public static final String TAG = CategoryFragment.class.getSimpleName();
     private static final String ARG_HEADER = "header";
     private static final String ARG_NAME = "name";
+    private static final String ARG_ID = "id";
 
     @BindView(R.id.clRootCategory)
     CoordinatorLayout mRootWidget;
@@ -54,18 +57,20 @@ public class CategoryFragment extends Fragment {
     private MainActivity mActivity;
     private Prefs mPrefs;
 
-    private int mHeader;
+    private String mHeader;
     private String mName;
+    private String mID;
 
     public CategoryFragment() {
         // Required empty public constructor
     }
 
-    public static CategoryFragment newInstance(int header, String name) {
+    public static CategoryFragment newInstance(String header, String name, String id) {
         CategoryFragment fragment = new CategoryFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_HEADER, header);
+        args.putString(ARG_HEADER, header);
         args.putString(ARG_NAME, name);
+        args.putString(ARG_ID, id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,8 +79,9 @@ public class CategoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mHeader = getArguments().getInt(ARG_HEADER);
+            mHeader = getArguments().getString(ARG_HEADER);
             mName = getArguments().getString(ARG_NAME);
+            mID = getArguments().getString(ARG_ID);
         }
         mActivity = (MainActivity) getActivity();
         mPrefs = new Prefs(getContext());
@@ -116,7 +122,9 @@ public class CategoryFragment extends Fragment {
         mDrawerToggle.syncState();
 
         mActivity.setTitle(mName);
-        mHeaderImg.setImageResource(mHeader);
+        Picasso.with(mActivity)
+                .load(mHeader)
+                .into(mHeaderImg);
     }
 
     public void setUpTabs() {
@@ -213,6 +221,14 @@ public class CategoryFragment extends Fragment {
         public String toString() {
             return Arrays.toString(
                     new String[]{String.valueOf(getTabPosition())});
+        }
+    }
+
+    class ServerData {
+        public class SubCategory {
+            public static final String URL = Utils.baseURL + "getsubcategory.aspx";
+            public static final String ImageURL = "http://foooddies.com/admin/";
+            public static final String CategoryID = "catid";
         }
     }
 }

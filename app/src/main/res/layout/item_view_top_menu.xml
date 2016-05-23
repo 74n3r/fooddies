@@ -112,13 +112,15 @@
                 android:layout_height="72dp"
                 android:adjustViewBounds="true"
                 android:padding="8dp"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_add_circle_outline_black_48dp" />
 
             <TextView
                 android:id="@+id/tvTopMenuToggle"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:text="@string/action_expand" />
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
@@ -205,6 +207,36 @@
 
             <TextView
                 android:id="@+id/tvTopMenu6"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvTopMenu7"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_columnWeight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivTopMenu7"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:adjustViewBounds="true"
+                android:padding="8dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvTopMenu7"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
                 android:gravity="center" />

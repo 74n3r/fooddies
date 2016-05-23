@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         } else {
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
         setUpViews();
         setUpTabs();

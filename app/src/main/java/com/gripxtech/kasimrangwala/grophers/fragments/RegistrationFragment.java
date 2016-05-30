@@ -603,9 +603,12 @@ public class RegistrationFragment extends Fragment
             pairs.add(new Pair<>(ServerData.Register.Email, email));
             pairs.add(new Pair<>(ServerData.Register.MobileNo, mobileNo));
             pairs.add(new Pair<>(ServerData.Register.Pass, pass));
-            pairs.add(new Pair<>(ServerData.Register.Country, country));
-            pairs.add(new Pair<>(ServerData.Register.State, state));
-            pairs.add(new Pair<>(ServerData.Register.City, city));
+            pairs.add(new Pair<>(ServerData.Register.Country,
+                    mCountryIDs.get(mCountries.indexOf(country))));
+            pairs.add(new Pair<>(ServerData.Register.State,
+                    mStateIDs.get(mStates.indexOf(state))));
+            pairs.add(new Pair<>(ServerData.Register.City,
+                    mCityIDs.get(mCities.indexOf(city))));
 
             try {
                 return mUtils.postToServer(ServerData.Register.URL, pairs);

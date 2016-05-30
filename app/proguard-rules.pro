@@ -8,6 +8,8 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+#ButterKnife
 -dontwarn com.malinskiy.superrecyclerview.SwipeDismissRecyclerViewTouchListener*
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
@@ -20,8 +22,12 @@
 -keepclasseswithmembernames class * {
     @butterknife.* <methods>;
 }
+
 # OkIO
 -dontwarn okio.**
+
+#Piccasso
+-dontwarn com.squareup.okhttp.**
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface

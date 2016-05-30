@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
 
         mDrawerToggle = new ActionBarDrawerToggle(mActivity, mActivity.getDrawerLayout(), mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mActivity.getDrawerLayout().setDrawerListener(mDrawerToggle);
+        mActivity.getDrawerLayout().addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
     }
 
@@ -127,14 +127,15 @@ public class HomeFragment extends Fragment {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mCategoryList.setLayoutManager(linearLayoutManager);
-        new GetPickLocation().execute();
+        mCategoryList.setAdapter(mAdapter);
+        baseGetCategory();
     }
 
-    public void baseGetCategory(final boolean isMoreAsk) {
+    public void baseGetCategory() {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                new GetCategoryList(isMoreAsk).execute();
+                new GetCategoryList().execute();
             }
         });
     }
@@ -190,7 +191,7 @@ public class HomeFragment extends Fragment {
             if (holder.getItemViewType() == ItemViewTypes.PickLocation) {
                 PickLocationItem item = (PickLocationItem) objects.get(position);
                 PickLocationViewHolder viewHolder = (PickLocationViewHolder) holder;
-                viewHolder.getmAddress().setText(item.getLocation());
+                viewHolder.getAddress().setText(item.getLocation());
             } else if (holder.getItemViewType() == ItemViewTypes.TopMenu) {
                 TopMenuItems item = (TopMenuItems) objects.get(position);
                 TopMenuViewHolder viewHolder = (TopMenuViewHolder) holder;
@@ -257,7 +258,7 @@ public class HomeFragment extends Fragment {
 
         }
 
-        public AppCompatTextView getmAddress() {
+        public AppCompatTextView getAddress() {
             return mAddress;
         }
     }
@@ -562,159 +563,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    class GetPickLocation extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            objects.add(new PickLocationItem(
-                    "Hill Drive, Bhavnagar"
-            ));
-
-            mCategoryList.setAdapter(mAdapter);
-            mAdapter.notifyDataSetChanged();
-            new GetTopMenu().execute();
-        }
-    }
-
-    class GetTopMenu extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                return mUtils.getToServer(ServerData.Category.URL, null);
-            } catch (Exception e) {
-                Log.e(TAG, "GetTopMenu::doInBackground(): " + e.getMessage());
-                Snackbar.make(mRootWidget,
-                        getString(R.string.cant_connect_to_server),
-                        Snackbar.LENGTH_LONG)
-                        .show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (result != null && result.length() != 0) {
-                Log.e(TAG, "GetTopMenu::onPostExecute(): result is: " + result);
-                String[] topMenuIds = new String[TopMenuItems.LIMIT];
-                String[] topMenuImages = new String[TopMenuItems.LIMIT];
-                String[] topMenuText = new String[TopMenuItems.LIMIT];
-                try {
-                    JSONArray topMenuList = new JSONObject(result)
-                            .getJSONArray(ServerData.Category.CategoryList);
-                    if (null != topMenuList && topMenuList.length() > 0) {
-                        for (int i = 0; i < topMenuList.length(); i++) {
-                            JSONObject topMenuObject = topMenuList.getJSONObject(i);
-                            if (topMenuObject != null) {
-                                topMenuIds[i] = topMenuObject.getString(ServerData.Category.CateGoryID);
-                                topMenuImages[i] = ServerData.Category.ImageURL +
-                                        topMenuObject.getString(ServerData.Category.CateGoryImage);
-                                topMenuText[i] = topMenuObject.getString(ServerData.Category.Category);
-                            } else {
-                                Log.e(TAG, "GetTopMenu::onPostExecute():" +
-                                        " topMenuObject is null at index " + i);
-                            }
-                            if (i == TopMenuItems.LIMIT - 1) {
-                                break;
-                            }
-                        }
-
-                    } else {
-                        Log.e(TAG, "GetTopMenu::onPostExecute():" +
-                                " topMenuList is null or empty");
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "GetTopMenu::onPostExecute(): " + e.getMessage());
-                }
-                objects.add(new TopMenuItems(
-                        topMenuIds,
-                        topMenuImages,
-                        topMenuText
-                ));
-            }
-            mAdapter.notifyDataSetChanged();
-            new GetSlider().execute();
-        }
-    }
-
-    class GetSlider extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                return mUtils.getToServer(ServerData.Slider.URL, null);
-            } catch (Exception e) {
-                Log.e(TAG, "GetSlider::doInBackground(): " + e.getMessage());
-                Snackbar.make(mRootWidget,
-                        getString(R.string.cant_connect_to_server),
-                        Snackbar.LENGTH_LONG)
-                        .show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (result != null && result.length() != 0) {
-                Log.e(TAG, "GetSlider::onPostExecute(): result is: " + result);
-                try {
-                    JSONArray sliderList = new JSONObject(result)
-                            .getJSONArray(ServerData.Slider.SliderList);
-                    if (null != sliderList && sliderList.length() > 0) {
-                        mSliderImageRes.clear();
-                        for (int i = 0; i < sliderList.length(); i++) {
-                            JSONObject sliderObject = sliderList.getJSONObject(i);
-                            if (sliderObject != null) {
-                                mSliderImageRes.add(
-                                        ServerData.Slider.ImageURL +
-                                                sliderObject.getString(ServerData.Slider.SliderImage));
-                            } else {
-                                Log.e(TAG, "GetSlider::onPostExecute():" +
-                                        " sliderObject is null at index " + i);
-                            }
-                        }
-                    } else {
-                        Log.e(TAG, "GetSlider::onPostExecute():" +
-                                " sliderList is null or empty");
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "GetSlider::onPostExecute(): " + e.getMessage());
-                }
-            }
-            objects.add(new SliderItems());
-
-            mAdapter.notifyDataSetChanged();
-            baseGetCategory(false);
-            // mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            //     @Override
-            //     public void onRefresh() {
-            //         baseGetCategory(false);
-            //     }
-            // });
-            // moreListener = new OnMoreListener() {
-            //     @Override
-            //     public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
-            //         baseGetCategory(true);
-            //     }
-            // };
-        }
-    }
-
     class GetCategoryList extends AsyncTask<Void, Void, String> {
 
-        private boolean isMoreAsk;
-
-        public GetCategoryList(boolean isMoreAsk) {
+        public GetCategoryList() {
             super();
-            this.isMoreAsk = isMoreAsk;
         }
 
         @Override
@@ -735,55 +587,135 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if (result != null && result.length() != 0) {
-                Log.e(TAG, "GetCategoryList::onPostExecute(): result is: " + result);
+                // Log.e(TAG, "GetCategoryList::onPostExecute(): result is: " + result);
+                objects.clear();
+                setupPickLocation();
                 try {
-                    JSONArray categoryList = new JSONObject(result)
-                            .getJSONArray(ServerData.Category.CategoryList);
-                    if (null != categoryList && categoryList.length() > 0) {
-                        for (int i = 0; i < categoryList.length(); i++) {
-                            JSONObject categoryObject = categoryList.getJSONObject(i);
-                            if (categoryObject != null) {
-                                objects.add(new CategoryItem(
-                                        categoryObject.getString(ServerData.Category.CateGoryID),
-                                        ServerData.Category.ImageURL +
-                                                categoryObject.getString(ServerData.Category.CateGoryImage),
-                                        ServerData.Category.ImageURL +
-                                                categoryObject.getString(ServerData.Category.CateGoryImage),
-                                        categoryObject.getString(ServerData.Category.Category),
-                                        mActivity.getString(R.string.delivery_time)));
-                            } else {
-                                Log.e(TAG, "GetCategoryList::onPostExecute():" +
-                                        " categoryObject is null at index " + i);
-                            }
-                        }
+                    JSONArray mainList = new JSONObject(result)
+                            .optJSONArray("main");
+                    if (null != mainList && mainList.length() > 0) {
+                        JSONArray topMenuList = mainList.optJSONObject(1)
+                                .optJSONArray("topcat");
+                        setupTopMenuList(topMenuList);
+
+                        JSONArray sliderList = mainList.optJSONObject(0)
+                                .optJSONArray("slider");
+                        setupSliderList(sliderList);
+
+                        JSONArray featProductList = mainList.optJSONObject(2)
+                                .optJSONArray("feactureproduct");
+                        setupFeatProductList(featProductList);
+
+                        JSONArray categoryList = mainList.optJSONObject(3)
+                                .optJSONArray("allcat");
+                        setupCategoryList(categoryList);
                     } else {
                         Log.e(TAG, "GetCategoryList::onPostExecute():" +
-                                " categoryList is null or empty");
+                                " mainList is null or empty");
                     }
                 } catch (JSONException e) {
                     Log.e(TAG, "GetCategoryList::onPostExecute(): " + e.getMessage());
                 }
+                mAdapter.notifyDataSetChanged();
             }
-            mAdapter.notifyDataSetChanged();
+        }
+
+        public void setupPickLocation() {
+            objects.add(new PickLocationItem(
+                    "Hill Drive, Bhavnagar"
+            ));
+        }
+
+        public void setupSliderList(JSONArray sliderList) {
+            if (null != sliderList && sliderList.length() > 0) {
+                mSliderImageRes.clear();
+                for (int i = 0; i < sliderList.length(); i++) {
+                    JSONObject sliderObject = sliderList.optJSONObject(i);
+                    if (sliderObject != null) {
+                        mSliderImageRes.add(
+                                ServerData.Category.ImageURL +
+                                        sliderObject.optString("image"));
+                    } else {
+                        Log.e(TAG, "setupSliderList():" +
+                                " sliderObject is null at index " + i);
+                    }
+                }
+                objects.add(new SliderItems());
+            } else {
+                Log.e(TAG, "setupSliderList():" +
+                        " sliderList is null or empty");
+            }
+        }
+
+        public void setupTopMenuList(JSONArray topMenuList) {
+            if (null != topMenuList && topMenuList.length() > 0) {
+                String[] topMenuIds = new String[TopMenuItems.LIMIT];
+                String[] topMenuImages = new String[TopMenuItems.LIMIT];
+                String[] topMenuText = new String[TopMenuItems.LIMIT];
+                for (int i = 0; i < topMenuList.length(); i++) {
+                    JSONObject topMenuObject = topMenuList.optJSONObject(i);
+                    if (topMenuObject != null) {
+                        topMenuIds[i] = topMenuObject.optString("Cid");
+                        topMenuImages[i] = ServerData.Category.ImageURL +
+                                topMenuObject.optString("image");
+                        topMenuText[i] = topMenuObject.optString("Category");
+                    } else {
+                        Log.e(TAG, "setupTopMenuList():" +
+                                " topMenuObject is null at index " + i);
+                    }
+                    if (i == TopMenuItems.LIMIT - 1) {
+                        break;
+                    }
+                }
+                objects.add(new TopMenuItems(
+                        topMenuIds,
+                        topMenuImages,
+                        topMenuText
+                ));
+            } else {
+                Log.e(TAG, "setupTopMenuList:" +
+                        " topMenuList is null or empty");
+            }
+        }
+
+        public void setupFeatProductList(JSONArray featProductList) {
+            if (null != featProductList && featProductList.length() > 0) {
+                // we'll add code
+            } else {
+                Log.e(TAG, "setupFeatProductList:" +
+                        " featProductList is null or empty");
+            }
+        }
+
+        public void setupCategoryList(JSONArray categoryList) {
+            if (null != categoryList && categoryList.length() > 0) {
+                for (int i = 0; i < categoryList.length(); i++) {
+                    JSONObject categoryObject = categoryList.optJSONObject(i);
+                    if (categoryObject != null) {
+                        objects.add(new CategoryItem(
+                                categoryObject.optString("Cid"),
+                                ServerData.Category.ImageURL +
+                                        categoryObject.optString("image"),
+                                ServerData.Category.ImageURL +
+                                        categoryObject.optString("image"),
+                                categoryObject.optString("Category"),
+                                mActivity.getString(R.string.delivery_time)));
+                    } else {
+                        Log.e(TAG, "setupCategoryList():" +
+                                " categoryObject is null at index " + i);
+                    }
+                }
+            } else {
+                Log.e(TAG, "setupCategoryList:" +
+                        " categoryList is null or empty");
+            }
         }
     }
 
     class ServerData {
-        public class Slider {
-            public static final String URL = Utils.baseURL + "getslider.aspx";
-            public static final String ImageURL = "http://foooddies.com/admin/";
-            public static final String SliderList = "slider";
-            public static final String SliderID = "sid";
-            public static final String SliderImage = "image";
-        }
-
         public class Category {
-            public static final String URL = Utils.baseURL + "getcategory.aspx";
+            public static final String URL = Utils.baseURL + "cat_with_Slider.aspx";
             public static final String ImageURL = "http://foooddies.com/admin/";
-            public static final String CategoryList = "category";
-            public static final String CateGoryID = "Cid";
-            public static final String Category = "Category";
-            public static final String CateGoryImage = "image";
         }
     }
 }

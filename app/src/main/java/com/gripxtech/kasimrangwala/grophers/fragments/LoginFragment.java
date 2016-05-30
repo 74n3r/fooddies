@@ -188,7 +188,7 @@ public class LoginFragment extends Fragment implements TextWatcher {
 
             if (result != null && result.length() != 0) {
                 Log.e(TAG + " result", result);
-                if (result.equals("2")) {
+                if (!result.equals("0")) {
                     mPrefs.setLoggedIn(true);
                     mPrefs.setMobileNo(mMobileNo.getText().toString());
                     startActivity(new Intent(mActivity, MainActivity.class));

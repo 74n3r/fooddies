@@ -233,14 +233,20 @@ public class CategoryFragment extends Fragment {
 
     class CategoryItem {
 
+        private String id;
         private String logo;
         private String name;
         private String deliveryTime;
 
-        public CategoryItem(String logo, String name, String deliveryTime) {
+        public CategoryItem(String id, String logo, String name, String deliveryTime) {
+            this.id = id;
             this.logo = logo;
             this.name = name;
             this.deliveryTime = deliveryTime;
+        }
+
+        public String getId() {
+            return id;
         }
 
         public String getLogo() {
@@ -291,6 +297,7 @@ public class CategoryFragment extends Fragment {
                         for (int i = 0; i < categoryList.length(); i++) {
                             JSONObject category = categoryList.getJSONObject(i);
                             mAdapter.getCategoryItems().add(new CategoryItem(
+                                    category.optString("Sid"),
                                     ServerData.Category.ImageURL +
                                             category.optString("image"),
                                     category.optString("SubCategory"),

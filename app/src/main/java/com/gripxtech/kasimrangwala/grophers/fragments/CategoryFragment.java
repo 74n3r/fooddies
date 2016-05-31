@@ -1,19 +1,21 @@
 package com.gripxtech.kasimrangwala.grophers.fragments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TabLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,14 @@ import android.view.ViewGroup;
 import com.gripxtech.kasimrangwala.grophers.MainActivity;
 import com.gripxtech.kasimrangwala.grophers.R;
 import com.gripxtech.kasimrangwala.grophers.utils.Utils;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,22 +46,21 @@ public class CategoryFragment extends Fragment {
     @BindView(R.id.clRootCategory)
     CoordinatorLayout mRootWidget;
 
-    @BindView(R.id.tbToolbar)
-    Toolbar mToolbar;
-
     @BindView(R.id.ivCategoryHeader)
     AppCompatImageView mHeaderImg;
 
-    @BindView(R.id.tlCategory)
-    TabLayout mTabLayout;
+    @BindView(R.id.tbToolbar)
+    Toolbar mToolbar;
 
-    @BindView(R.id.vpCategoryTabs)
-    ViewPager mViewPager;
+    @BindView(R.id.rvCategory)
+    SuperRecyclerView mCategoryList;
 
-    private ViewPagerAdapter mAdapter;
+    private CategoryAdapter mAdapter;
+
     private ActionBarDrawerToggle mDrawerToggle;
     private MainActivity mActivity;
-    private Prefs mPrefs;
+    private Handler mHandler;
+    private Utils mUtils;
 
     private String mHeader;
     private String mName;
@@ -84,7 +89,10 @@ public class CategoryFragment extends Fragment {
             mID = getArguments().getString(ARG_ID);
         }
         mActivity = (MainActivity) getActivity();
-        mPrefs = new Prefs(getContext());
+        mHandler = new Handler();
+        mUtils = Utils.getInstance();
+
+        mAdapter = new CategoryAdapter(new ArrayList<CategoryItem>());
     }
 
     @Override
@@ -99,7 +107,7 @@ public class CategoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         setUpViews();
-        setUpTabs();
+        setupCategoryList();
     }
 
     @Override
@@ -118,7 +126,7 @@ public class CategoryFragment extends Fragment {
 
         mDrawerToggle = new ActionBarDrawerToggle(mActivity, mActivity.getDrawerLayout(), mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mActivity.getDrawerLayout().setDrawerListener(mDrawerToggle);
+        mActivity.getDrawerLayout().addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
         mActivity.setTitle(mName);
@@ -127,108 +135,188 @@ public class CategoryFragment extends Fragment {
                 .into(mHeaderImg);
     }
 
-    public void setUpTabs() {
-        List<ViewPagerItem> pagerItems = new ArrayList<>();
-        pagerItems.add(new ViewPagerItem(new VegetableFragment(), "Mangoes"));
-        pagerItems.add(new ViewPagerItem(new VegetableFragment(), "Fruits"));
-        pagerItems.add(new ViewPagerItem(new VegetableFragment(), "Vegetables"));
-        mAdapter = new ViewPagerAdapter(getChildFragmentManager(), pagerItems);
-        mViewPager.setAdapter(mAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+    public void setupCategoryList() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mCategoryList.setLayoutManager(linearLayoutManager);
+        mCategoryList.setAdapter(mAdapter);
+        baseGetCategory();
+    }
 
+    public void baseGetCategory() {
+        mHandler.post(new Runnable() {
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
-                mPrefs.setTabPosition(tab.getPosition());
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+            public void run() {
+                new GetCategoryList().execute();
             }
         });
-        mTabLayout.getTabAt(mPrefs.getTabPosition()).select();
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
 
-        private List<ViewPagerItem> pagerItems;
+        private List<CategoryItem> categoryItems;
 
-        public ViewPagerAdapter(FragmentManager fm, List<ViewPagerItem> pagerItems) {
-            super(fm);
-            this.pagerItems = pagerItems;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return pagerItems.get(position).getFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return pagerItems.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return pagerItems.get(position).getPageTitle();
-        }
-    }
-
-    class ViewPagerItem {
-        private Fragment fragment;
-        private String pageTitle;
-
-        public ViewPagerItem(Fragment fragment, String pageTitle) {
+        public CategoryAdapter(List<CategoryItem> categoryItems) {
             super();
-            this.fragment = fragment;
-            this.pageTitle = pageTitle;
+            this.categoryItems = categoryItems;
         }
 
-        public Fragment getFragment() {
-            return fragment;
+        @Override
+        public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new CategoryViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.item_view_home, parent, false)
+            );
         }
 
-        public String getPageTitle() {
-            return pageTitle;
+        @Override
+        public void onBindViewHolder(CategoryViewHolder holder, int position) {
+            CategoryItem item = categoryItems.get(position);
+            Picasso.with(mActivity)
+                    .load(item.getLogo())
+                    .into(holder.getLogo());
+            holder.getName().setText(item.getName());
+            holder.getDeliveryTime().setText(item.getDeliveryTime());
+        }
+
+        @Override
+        public int getItemCount() {
+            return categoryItems.size();
+        }
+
+        public List<CategoryItem> getCategoryItems() {
+            return categoryItems;
+        }
+    }
+
+    class CategoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        @BindView(R.id.ivHomeHeader)
+        AppCompatImageView mHeader;
+
+        @BindView(R.id.ivHomeLogo)
+        AppCompatImageView mLogo;
+
+        @BindView(R.id.tvHomeName)
+        AppCompatTextView mName;
+
+        @BindView(R.id.tvDeliveryBy)
+        AppCompatTextView mDeliveryBy;
+
+        @BindView(R.id.tvHomeDeliveryTime)
+        AppCompatTextView mDeliveryTime;
+
+        public CategoryViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            mHeader.setVisibility(View.GONE);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+        }
+
+        public AppCompatImageView getLogo() {
+            return mLogo;
+        }
+
+        public AppCompatTextView getName() {
+            return mName;
+        }
+
+        public AppCompatTextView getDeliveryTime() {
+            return mDeliveryTime;
+        }
+    }
+
+    class CategoryItem {
+
+        private String logo;
+        private String name;
+        private String deliveryTime;
+
+        public CategoryItem(String logo, String name, String deliveryTime) {
+            this.logo = logo;
+            this.name = name;
+            this.deliveryTime = deliveryTime;
+        }
+
+        public String getLogo() {
+            return logo;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDeliveryTime() {
+            return deliveryTime;
+        }
+    }
+
+    class GetCategoryList extends AsyncTask<Void, Void, String> {
+
+        public GetCategoryList() {
+            super();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            List<Pair<String, String>> pairs = new ArrayList<>();
+            pairs.add(new Pair<>("catid", mID));
+            try {
+                return mUtils.getToServer(ServerData.Category.URL, pairs);
+            } catch (Exception e) {
+                Log.e(TAG, "GetCategoryList::doInBackground(): " + e.getMessage());
+                Snackbar.make(mRootWidget,
+                        getString(R.string.cant_connect_to_server),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null && result.length() != 0) {
+                // Log.e(TAG, "GetCategoryList::onPostExecute(): result is: " + result);
+                mAdapter.getCategoryItems().clear();
+                try {
+                    JSONArray categoryList = new JSONObject(result)
+                            .optJSONArray("subcat");
+                    if (null != categoryList && categoryList.length() > 0) {
+                        for (int i = 0; i < categoryList.length(); i++) {
+                            JSONObject category = categoryList.getJSONObject(i);
+                            mAdapter.getCategoryItems().add(new CategoryItem(
+                                    ServerData.Category.ImageURL +
+                                            category.optString("image"),
+                                    category.optString("SubCategory"),
+                                    mActivity.getString(R.string.delivery_time)
+                            ));
+                        }
+                    } else {
+                        Log.e(TAG, "GetCategoryList::onPostExecute():" +
+                                " categoryList is null or empty");
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "GetCategoryList::onPostExecute(): " + e.getMessage());
+                }
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 
     class Prefs {
-        private static final String PrefsName = "CategoryPrefs";
-        private static final String TabPosition = "tabPosition";
 
-        private SharedPreferences mPrefs;
-
-        public Prefs(Context context) {
-            super();
-            mPrefs = context.getSharedPreferences(PrefsName, Context.MODE_PRIVATE);
-        }
-
-        public int getTabPosition() {
-            return mPrefs.getInt(TabPosition, 0);
-        }
-
-        public void setTabPosition(int tabPosition) {
-            mPrefs.edit().putInt(TabPosition, tabPosition).apply();
-        }
-
-        @Override
-        public String toString() {
-            return Arrays.toString(
-                    new String[]{String.valueOf(getTabPosition())});
-        }
     }
 
     class ServerData {
-        public class SubCategory {
+        public class Category {
             public static final String URL = Utils.baseURL + "getsubcategory.aspx";
             public static final String ImageURL = "http://foooddies.com/admin/";
-            public static final String CategoryID = "catid";
         }
     }
 }

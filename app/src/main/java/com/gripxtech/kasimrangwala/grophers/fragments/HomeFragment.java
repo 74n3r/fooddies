@@ -57,6 +57,7 @@ public class HomeFragment extends Fragment {
 
     @BindView(R.id.rvHome)
     SuperRecyclerView mCategoryList;
+
     List<String> mSliderImageRes;
     private List<Object> objects;
     // private OnMoreListener moreListener;

@@ -1,6 +1,7 @@
 package com.gripxtech.kasimrangwala.grophers.utils;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -164,6 +166,16 @@ public class Utils {
             Log.e(TAG, "isGPSLocationEnabled(): " + e.getMessage());
         }
         return false;
+    }
+
+    public ProgressDialog getProgressDialog(Context context) {
+        ProgressDialog dialog;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            dialog = new ProgressDialog(context, R.style.AppAlertDialogTheme);
+        } else {
+            dialog = new ProgressDialog(context);
+        }
+        return dialog;
     }
 
     public AlertDialog showMessage(Context context,

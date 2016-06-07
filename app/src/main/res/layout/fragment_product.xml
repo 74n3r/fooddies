@@ -2,15 +2,15 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clRootCategory"
+    android:id="@+id/clRootProduct"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:fitsSystemWindows="true"
-    tools:context="com.gripxtech.kasimrangwala.grophers.fragments.CategoryFragment">
+    tools:context="com.gripxtech.kasimrangwala.grophers.fragments.ProductFragment">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/ablCategory"
+        android:id="@+id/ablProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -24,7 +24,7 @@
             app:titleEnabled="false">
 
             <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/ivCategoryHeader"
+                android:id="@+id/ivProductHeader"
                 android:layout_width="match_parent"
                 android:layout_height="288dp"
                 android:adjustViewBounds="true"
@@ -43,7 +43,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <com.malinskiy.superrecyclerview.SuperRecyclerView
-        android:id="@+id/rvCategory"
+        android:id="@+id/rvProduct"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"

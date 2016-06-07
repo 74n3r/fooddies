@@ -151,7 +151,7 @@ public class LoginFragment extends Fragment implements TextWatcher {
 
         public DoLogin() {
             super();
-            dialog = new ProgressDialog(mActivity);
+            dialog = mUtils.getProgressDialog(mActivity);
             mobileNo = mMobileNo.getText().toString();
             pass = mPass.getText().toString();
         }
@@ -191,6 +191,7 @@ public class LoginFragment extends Fragment implements TextWatcher {
                 if (!result.equals("0")) {
                     mPrefs.setLoggedIn(true);
                     mPrefs.setMobileNo(mMobileNo.getText().toString());
+                    mPrefs.setUserID(result);
                     startActivity(new Intent(mActivity, MainActivity.class));
                     mActivity.finish();
                 } else {

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.gripxtech.kasimrangwala.grophers.fragments.CartFragment;
 import com.gripxtech.kasimrangwala.grophers.fragments.HomeFragment;
 import com.gripxtech.kasimrangwala.grophers.fragments.SearchFragment;
 
@@ -77,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_view_cart) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flContentMain, CartFragment.newInstance(), CartFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -102,9 +108,9 @@ public class MainActivity extends AppCompatActivity {
         return mDrawerLayout;
     }
 
-    public NavigationView getNavigationView() {
-        return mNavigationView;
-    }
+//    public NavigationView getNavigationView() {
+//        return mNavigationView;
+//    }
 
     public void setUpNavView() {
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

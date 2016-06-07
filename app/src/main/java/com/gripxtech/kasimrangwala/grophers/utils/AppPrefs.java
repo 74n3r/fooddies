@@ -8,6 +8,7 @@ public class AppPrefs {
     public static final String TAG = AppPrefs.class.getSimpleName();
     private static final String FirstLaunch = "FirstLaunch";
     private static final String LoggedIn = "LoggedIn";
+    private static final String UserID = "UserID";
     private static final String MobileNo = "MobileNo";
     SharedPreferences mPrefs;
 
@@ -29,6 +30,14 @@ public class AppPrefs {
 
     public void setLoggedIn(boolean loggedIn) {
         mPrefs.edit().putBoolean(LoggedIn, loggedIn).apply();
+    }
+
+    public String getUserID() {
+        return mPrefs.getString(UserID, "0");
+    }
+
+    public void setUserID(String userID) {
+        mPrefs.edit().putString(UserID, userID).apply();
     }
 
     public String getMobileNo() {

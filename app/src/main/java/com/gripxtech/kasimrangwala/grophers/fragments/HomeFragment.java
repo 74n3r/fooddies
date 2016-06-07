@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.AppCompatImageView;
@@ -128,7 +129,12 @@ public class HomeFragment extends Fragment {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mCategoryList.setLayoutManager(linearLayoutManager);
-        mCategoryList.setAdapter(mAdapter);
+        mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                baseGetCategory();
+            }
+        });
         baseGetCategory();
     }
 
@@ -619,6 +625,7 @@ public class HomeFragment extends Fragment {
                 }
                 mAdapter.notifyDataSetChanged();
             }
+            mCategoryList.setAdapter(mAdapter);
         }
 
         public void setupPickLocation() {
@@ -682,6 +689,8 @@ public class HomeFragment extends Fragment {
         public void setupFeatProductList(JSONArray featProductList) {
             if (null != featProductList && featProductList.length() > 0) {
                 // we'll add code
+                Log.e(TAG, "setupFeatProductList:" +
+                        " skipping entries.");
             } else {
                 Log.e(TAG, "setupFeatProductList:" +
                         " featProductList is null or empty");

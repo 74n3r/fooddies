@@ -4,10 +4,12 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.AppCompatImageView;
@@ -45,6 +47,9 @@ public class CategoryFragment extends Fragment {
 
     @BindView(R.id.clRootCategory)
     CoordinatorLayout mRootWidget;
+
+    @BindView(R.id.ablCategory)
+    AppBarLayout mAppBar;
 
     @BindView(R.id.ivCategoryHeader)
     AppCompatImageView mHeaderImg;
@@ -133,13 +138,25 @@ public class CategoryFragment extends Fragment {
         Picasso.with(mActivity)
                 .load(mHeader)
                 .into(mHeaderImg);
+
+        mAppBar.post(new Runnable() {
+            @Override
+            public void run() {
+                mAppBar.setExpanded(false, true);
+            }
+        });
     }
 
     public void setupCategoryList() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mCategoryList.setLayoutManager(linearLayoutManager);
-        mCategoryList.setAdapter(mAdapter);
+        mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                baseGetCategory();
+            }
+        });
         baseGetCategory();
     }
 
@@ -215,7 +232,16 @@ public class CategoryFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-
+            CategoryItem item = mAdapter.getCategoryItems().get(getAdapterPosition());
+            mActivity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flContentMain, ProductFragment.newInstance(
+                            item.getLogo(),
+                            item.getName(),
+                            item.getId()
+                    ), ProductFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
         }
 
         public AppCompatImageView getLogo() {
@@ -313,11 +339,8 @@ public class CategoryFragment extends Fragment {
                 }
                 mAdapter.notifyDataSetChanged();
             }
+            mCategoryList.setAdapter(mAdapter);
         }
-    }
-
-    class Prefs {
-
     }
 
     class ServerData {

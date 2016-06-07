@@ -22,7 +22,6 @@ import android.widget.ImageView;
 
 import com.gripxtech.kasimrangwala.grophers.MainActivity;
 import com.gripxtech.kasimrangwala.grophers.R;
-import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -49,7 +48,6 @@ public class SearchFragment extends Fragment {
     SuperRecyclerView mSearchResults;
 
     SearchResultsAdapter mAdapter;
-    OnMoreListener moreListener;
 
     MainActivity mActivity;
     Handler mHandler;
@@ -133,26 +131,20 @@ public class SearchFragment extends Fragment {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mSearchResults.setLayoutManager(linearLayoutManager);
-        baseGetSearchResults(false);
+        baseGetSearchResults();
         // mCategoryList.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
         //     @Override
         //     public void onRefresh() {
         //         baseGetCategory(false);
         //     }
         // });
-        moreListener = new OnMoreListener() {
-            @Override
-            public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
-                baseGetSearchResults(true);
-            }
-        };
     }
 
-    public void baseGetSearchResults(final boolean isMoreAsk) {
+    public void baseGetSearchResults() {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                new GetSearchResults(isMoreAsk).execute();
+                new GetSearchResults().execute();
             }
         });
     }
@@ -219,9 +211,9 @@ public class SearchFragment extends Fragment {
             };
         }
 
-        public List<SearchResultItem> getSearchResultItems() {
-            return searchResultItems;
-        }
+//        public List<SearchResultItem> getSearchResultItems() {
+//            return searchResultItems;
+//        }
 
     }
 
@@ -285,13 +277,6 @@ public class SearchFragment extends Fragment {
     }
 
     class GetSearchResults extends AsyncTask<Void, Void, String> {
-
-        private boolean isMoreAsk;
-
-        public GetSearchResults(boolean isMoreAsk) {
-            super();
-            this.isMoreAsk = isMoreAsk;
-        }
 
         @Override
         protected String doInBackground(Void... params) {

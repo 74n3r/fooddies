@@ -53,6 +53,12 @@
     <string name="delivery_in">Delivery in</string>
     <string name="delivery_time">Today</string>
     <string name="dummy_location">Hill Drive, Bhavnagar</string>
+    <string name="add_to_cart">Add</string>
+    <string name="cart">Cart</string>
+    <string name="select_quantity">Quantity</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="no_item">No Items found</string>
     <!-- Dummy strings END -->
 
     <!-- Search fragment's strings BEGIN -->

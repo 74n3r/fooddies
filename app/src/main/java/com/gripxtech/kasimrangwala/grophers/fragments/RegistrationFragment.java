@@ -359,7 +359,7 @@ public class RegistrationFragment extends Fragment
             loginFragment.validateMobileNo(mMobileNo.getText());
             loginFragment.validatePass(mPass.getText());
         } else {
-            Log.e(TAG, "switchToLogin(): fragment is " + fragment);
+            Log.e(TAG, "switchToLogin(): fragment is null");
         }
     }
 
@@ -370,7 +370,7 @@ public class RegistrationFragment extends Fragment
 
         GetCity() {
             super();
-            dialog = new ProgressDialog(mActivity);
+            dialog = mUtils.getProgressDialog(mActivity);
         }
 
         @Override
@@ -443,7 +443,7 @@ public class RegistrationFragment extends Fragment
 
         GetState() {
             super();
-            dialog = new ProgressDialog(mActivity);
+            dialog = mUtils.getProgressDialog(mActivity);
         }
 
         @Override
@@ -696,7 +696,7 @@ public class RegistrationFragment extends Fragment
             public static final String Country = "countryid";
             public static final String State = "stateid";
             public static final String City = "cityid";
-            public static final String ResultCode = "1";
+            // public static final String ResultCode = "1";
         }
     }
 }

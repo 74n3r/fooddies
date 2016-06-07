@@ -4,6 +4,7 @@
     android:id="@+id/clRootRegistration"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context="com.gripxtech.kasimrangwala.grophers.fragments.RegistrationFragment">
 
     <android.support.v4.widget.NestedScrollView

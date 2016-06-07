@@ -1,6 +1,5 @@
 package com.gripxtech.kasimrangwala.grophers.fragments;
 
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gripxtech.kasimrangwala.grophers.MainActivity;
 import com.gripxtech.kasimrangwala.grophers.R;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
@@ -30,10 +28,8 @@ public class VegetableFragment extends Fragment {
     @BindView(R.id.rvVegetables)
     SuperRecyclerView mCategoryList;
 
-    private MainActivity mActivity;
+    // private MainActivity mActivity;
     private Handler mHandler;
-
-    private CategoryListAdapter mAdapter;
 
     public VegetableFragment() {
         // Required empty public constructor
@@ -46,7 +42,7 @@ public class VegetableFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = (MainActivity) getActivity();
+        // mActivity = (MainActivity) getActivity();
         mHandler = new Handler();
     }
 
@@ -68,14 +64,14 @@ public class VegetableFragment extends Fragment {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mCategoryList.setLayoutManager(linearLayoutManager);
-        baseGetCategory(false);
+        baseGetCategory();
     }
 
-    public void baseGetCategory(final boolean isMoreAsk) {
+    public void baseGetCategory() {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                new GetCategoryList(isMoreAsk).execute();
+                new GetCategoryList().execute();
             }
         });
     }
@@ -111,9 +107,9 @@ public class VegetableFragment extends Fragment {
             return categoryItems.size();
         }
 
-        public List<CategoryItem> getCategoryItems() {
-            return categoryItems;
-        }
+//        public List<CategoryItem> getCategoryItems() {
+//            return categoryItems;
+//        }
     }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -145,9 +141,9 @@ public class VegetableFragment extends Fragment {
 
         }
 
-        public AppCompatImageView getHeader() {
-            return mHeader;
-        }
+//        public AppCompatImageView getHeader() {
+//            return mHeader;
+//        }
 
         public AppCompatImageView getLogo() {
             return mLogo;
@@ -198,13 +194,6 @@ public class VegetableFragment extends Fragment {
     }
 
     class GetCategoryList extends AsyncTask<Void, Void, String> {
-
-        private boolean isMoreAsk;
-
-        public GetCategoryList(boolean isMoreAsk) {
-            super();
-            this.isMoreAsk = isMoreAsk;
-        }
 
         @Override
         protected String doInBackground(Void... params) {
@@ -268,7 +257,7 @@ public class VegetableFragment extends Fragment {
                     "RS 30/-"
             ));
 
-            mAdapter = new CategoryListAdapter(categoryItems);
+            CategoryListAdapter mAdapter = new CategoryListAdapter(categoryItems);
             mCategoryList.setAdapter(mAdapter);
         }
     }
